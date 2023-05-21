@@ -27,6 +27,7 @@ async function run() {
         await client.connect();
 
         const toyCollection = client.db('robotGalaxy').collection('toy');
+        const toysCollection = client.db('robotGalaxy').collection('toys');
 
         app.get('/toy', async (req, res) => {
             const cursor = toyCollection.find();
@@ -41,10 +42,17 @@ async function run() {
             res.send(user)
         })
 
-        app.post('/toy', async (req, res) => {
-            const user = req.body;
-            console.log('new users', user)
-            const result = await toyCollection.insertOne(user);
+
+        app.get('/toys', async (req, res) => {
+            const cursor = toysCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        app.post('/toys', async (req, res) => {
+            const toys = req.body;
+            console.log('new users', toys)
+            const result = await toysCollection.insertOne(toys);
             res.send(result)
         });
 
