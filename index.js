@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+
 
         const toyCollection = client.db('robotGalaxy').collection('toy');
         const toysCollection = client.db('robotGalaxy').collection('toys');
@@ -37,6 +37,7 @@ async function run() {
 
         app.get('/toy/:id', async (req, res) => {
             const id = req.params.id;
+            console.log('40', id)
             const query = { _id: new ObjectId(id) }
             const user = await toyCollection.findOne(query);
             res.send(user)
@@ -59,23 +60,43 @@ async function run() {
 
         app.get('/toys/:id', async (req, res) => {
             const id = req.params.id;
+            console.log('62', id)
             const query = { _id: new ObjectId(id) }
             const user = await toysCollection.findOne(query);
             res.send(user)
         })
 
-        app.get("/toys/:email", async (req, res) => {
+        app.get("/toyss/:email", async (req, res) => {
             console.log(req.params.email);
-            const jobs = await toysCollection
+            const toys = await toysCollection
                 .find({
                     email: req.params.email,
                 })
                 .toArray();
-            res.send(jobs);
+            res.send(toys);
         });
 
+        app.put('/toys/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedToys = req.body;
+            console.log(updatedToys);
+            const updateDoc = {
+                $set: {
+                    status: updatedToys.status
+                },
+            };
+            const result = await toysCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
 
 
+        app.delete('/toys/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.deleteOne(query);
+            res.send(result);
+        })
 
 
 
